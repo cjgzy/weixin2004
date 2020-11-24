@@ -1,0 +1,8 @@
+<!--pages/my/my.wxml-->
+<view class="page-body">
+  <view class="btn-area" id="buttonContainer">
+    <view class="button-sp-area">
+      <button type="primary" plain="true"  id="tapTest" data-hi="Weixin" bindtap="tapName">登录</button>
+    </view>
+  </view>
+</view>

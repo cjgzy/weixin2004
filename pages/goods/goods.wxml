@@ -1,2 +1,8 @@
 <!--pages/goods/goods.wxml-->
-<text>pages/goods/goods.wxml</text>
+<view class="page-body">
+  <view class="btn-area" id="buttonContainer">
+    <view class="button-sp-area">
+      <button type="primary" open-type="getUserInfo" bindtap="login">登录</button>
+    </view>
+  </view>
+</view>

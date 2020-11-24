@@ -4,7 +4,6 @@ const app = getApp()
 
 Page({
   data: {
-    motto: 'Hello World',
     userInfo: {},
     hasUserInfo: false,
     canIUse: wx.canIUse('button.open-type.getUserInfo')
@@ -15,40 +14,111 @@ Page({
       url: '../logs/logs'
     })
   },
-  onLoad: function () {
-    if (app.globalData.userInfo) {
-      this.setData({
-        userInfo: app.globalData.userInfo,
-        hasUserInfo: true
-      })
-    } else if (this.data.canIUse){
-      // 由于 getUserInfo 是网络请求，可能会在 Page.onLoad 之后才返回
-      // 所以此处加入 callback 以防止这种情况
-      app.userInfoReadyCallback = res => {
-        this.setData({
-          userInfo: res.userInfo,
-          hasUserInfo: true
-        })
-      }
-    } else {
-      // 在没有 open-type=getUserInfo 版本的兼容处理
-      wx.getUserInfo({
-        success: res => {
-          app.globalData.userInfo = res.userInfo
-          this.setData({
-            userInfo: res.userInfo,
-            hasUserInfo: true
-          })
-        }
-      })
-    }
-  },
   getUserInfo: function(e) {
-    console.log(e)
+    // console.log(e)
     app.globalData.userInfo = e.detail.userInfo
     this.setData({
       userInfo: e.detail.userInfo,
       hasUserInfo: true
     })
-  }
-})
+  },
+  onLoad:function () {
+    // console.log(this)
+   this.getGoodsList();
+   //登录
+   wx.login({
+    success (res) {
+      if (res.code) {
+        //发起网络请求
+        wx.request({
+          url: 'http://weixin.2004.com/api/login',
+          data: {
+            code: res.code
+          },
+          success(res){
+            // console.log (res);
+            //将token存入本地存储
+              wx.setStorage({
+                data: res.data.token,
+                key: 'token',
+              })
+          }
+        })
+      } else {
+        console.log('登录失败！' + res.errMsg)
+      }
+    }
+  })
+
+  },
+    onShareAppMessage() {
+      return {
+        title: 'swiper',
+        path: 'page/component/pages/swiper/swiper'
+      }
+    },
+  
+    data: {
+      background: ["/images/discount-banner.jpg", '/images/nursing-banner.jpg', '/images/draw-banner.jpg'],
+      indicatorDots: true,
+      vertical: false,
+      autoplay: true,
+      interval: 2000,
+      duration: 500,
+      arr:[],
+      page:1,
+      pagesize:10,
+    },
+    onReachBottom:function(){
+      console.log(1234567);
+      this.data.page++;
+      this.getGoodsList();
+    },
+    getGoodsList:function(){
+      let _this=this;
+      wx.request({
+        url: 'http://weixin.2004.com/api/goodslist', //仅为示例，并非真实的接口地址
+        data: {
+          page:_this.data.page,
+          size:_this.data.pagezise
+        },
+        header: {'content-type': 'application/json'},
+        success (res) {
+          // console.log(res);
+        let new_list=_this.data.arr.concat(res.data.data.list)
+        _this.setData({
+          arr:new_list
+        })
+        }
+      })
+    },
+    changeIndicatorDots() {
+      this.setData({
+        indicatorDots: !this.data.indicatorDots
+      })
+    },
+    
+    changeAutoplay() {
+      this.setData({
+        autoplay: !this.data.autoplay
+      })
+    },
+  
+    intervalChange(e) {
+      this.setData({
+        interval: e.detail.value
+      })
+    },
+  
+    durationChange(e) {
+      this.setData({
+        duration: e.detail.value
+      })
+    },
+    catchTapCategory: function (e) {
+          var goodsId = e.currentTarget.dataset.goodsid;
+          wx.navigateTo({
+            url: '/pages/detail/detail?goods_id='+goodsId
+          })
+    },
+  })

@@ -1,0 +1,100 @@
+<!--pages/cart/cart.wxml-->
+<view id='cart'>
+  <view class="top">
+    <view class="titles">
+      <mp-icon icon='back' size='{{10}}' class="icon" type='field'></mp-icon>
+      <view class="txt">购物车</view>
+      <mp-icon icon='more' size='{{25}}' class="icon"></mp-icon>
+    </view>
+    <view class="address">
+      <view class="location">
+        <mp-icon icon='location' size='{{15}}' type='field'></mp-icon>
+        朝阳区三环到四环之间
+      </view>
+      <view class="edit">编辑商品</view>
+    </view>
+  </view>
+  <view class="content">
+    <view class="shop" wx:for="{{data}}">
+      <view class="top">
+        <view class="self" wx:if="{{item.shop.self}}">自营</view>
+        <view class="name">{{item.shop.name}}</view>
+        <view class="fare" wx:if="{{item.shop.fare}}">
+          <mp-icon icon='info' size='{{15}}'></mp-icon> 已免运费
+        </view>
+        <view class="coupon" wx:if="{{item.shop.coupon}}">优惠券</view>
+      </view>
+      <checkbox-group  bindchange='handleCheck'>
+        <view class="goods" wx:for="{{item.goods}}" wx:for-index='goodsIndex'>
+          <view class="select">
+            <checkbox value="{{[index,goodsIndex]}}" checked="{{item.selected}}"/>
+          </view>
+          <view class="img-box">
+            <image src="{{item.specs[item.spec].img}}" mode="widthFix" class="img"></image>
+          </view>
+          <view class="info">
+            <view class="title">{{item.title}}</view>
+            <view class="spec" bindtap="handleClickSpec" 
+              data-index="{{[index,goodsIndex]}}"
+              data-specs="{{item.specs}}" data-spec="{{item.spec}}">
+              <view class="name">{{item.specs[item.spec].name}}</view>
+              <view>,选服务 </view>
+              <mp-icon icon='done' size='{{10}}' type='field'></mp-icon>
+            </view>
+            <view class="price_count">
+              <view class="price">￥{{item.specs[item.spec].price}}</view>
+              <view class="count">
+                <view class="btn" bindtap="handleCount" wx:if="{{item.count>1}}" 
+                  data-price="{{item.specs[item.spec].price}}"
+                  data-shop="{{index}}" data-goods="{{goodsIndex}}" data-act="reduce">-</view>
+                <view class="num">{{item.count}}</view>
+                <view class="btn"  bindtap="handleCount"
+                  data-price="{{item.specs[item.spec].price}}"
+                  data-shop="{{index}}" data-goods="{{goodsIndex}}" data-act="add">+</view>
+              </view>
+            </view>
+            <view class="bottom">
+              <view class="follow">移入关注</view>
+              <view class="delete">删除</view>
+            </view>
+          </view>
+        </view>
+      </checkbox-group>
+    </view>
+  </view>
+  <view class="settle">
+    <view class="check">
+      <checkbox-group bindchange='selectAll'>
+        <checkbox value="{{true}}" checked="{{false}}" />全选
+      </checkbox-group>
+    </view>
+    <view class="total">
+      <view class="price">总计：￥{{total}}</view>
+      <view class="btn">去结算（{{selectedNum}}件）</view>
+    </view>
+  </view>
+  <mp-halfScreenDialog  show="{{specs.show}}" class="specs-action-sheet" closabled='{{false}}'>
+    <view slot='desc' class="desc">
+      <view class="current">
+        <view class="img-box">
+          <image src='{{specs.data[specs.selected].img}}' mode="widthFix" class="img"></image>
+        </view>
+        <view class="info">
+          <view class="price">￥{{specs.data[specs.selected].price}}</view>
+          <view class="name">
+            <text class="txt">已选</text>
+            {{specs.data[specs.selected].name}}
+          </view>
+        </view>
+      </view>
+      <view class="specs">
+        <block wx:for="{{specs.data}}" >
+          <view bindtap="handleSpecClick" data-index="{{index}}"
+          class="item {{index==specs.selected?'selected':''}}" >{{item.name}}</view>
+        </block>
+      </view>
+      <button class="btn" bindtap="handleChangeSpec">确认</button>
+    </view>
+  </mp-halfScreenDialog >
+</view>
+
